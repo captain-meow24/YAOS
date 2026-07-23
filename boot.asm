@@ -1,7 +1,15 @@
-ORG 0X7C00      ; tells the assembler the starting address as the BIOS brings the bootloader here
+ORG 0      ; Tell the assembler to assume this code starts at offset 0.-
 BITS 16         ; tells assembler how many bits the instructions should be assembled into
 
 start:
+    cli:        ; clear interrupts
+    mov ax, 0x7c0
+    mov ds, ax      ; setting segment registers
+    mov es, ax
+    mov ax, 0x00
+    mov ss, ax
+    mov sp, 0x7c00
+    sti:        ; enable interrupts (from keyboard, etc that BIOS initialised)
     mov si, message    ; moves the address of message into SI which is a pointer register
     call print        ; calls print()
     jmp $             ; jumps to current address 
@@ -9,7 +17,7 @@ start:
 print:                ; print is a global label, can be called from anywhere
     mov bx, 0         ; bx is used by int 0x10 for settings, 0 = default, 
 .loop:                ; .loop is a local label, can only be called by the global label above it
-    lodsb            ; lodsb is used to take the char stored insidesi and save it into al (al = *si) and then increments si
+    lodsb            ; lodsb is used to take the char stored inside si and save it into al (al = *si) and then increments si
     cmp al, 0         ; compares if al = 0 (string ends with 0)
     je .done          ; calls done if al is 0
     call print_char   ; calls print_char if not
