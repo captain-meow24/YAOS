@@ -1,15 +1,22 @@
 ORG 0      ; Tell the assembler to assume this code starts at offset 0.-
 BITS 16         ; tells assembler how many bits the instructions should be assembled into
+jmp 0x7C0:start
 
+_start:
+    jmp short start
+    nop
+times 33 db 0
 start:
-    cli:        ; clear interrupts
+    jmp 0x7C0:step2
+step2:
+    cli        ; clear interrupts
     mov ax, 0x7c0
     mov ds, ax      ; setting segment registers
     mov es, ax
     mov ax, 0x00
     mov ss, ax
     mov sp, 0x7c00
-    sti:        ; enable interrupts (from keyboard, etc that BIOS initialised)
+    sti        ; enable interrupts (from keyboard, etc that BIOS initialised)
     mov si, message    ; moves the address of message into SI which is a pointer register
     call print        ; calls print()
     jmp $             ; jumps to current address 
