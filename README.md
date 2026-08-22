@@ -1,2 +1,2 @@
-# CustomOS
-Making my own OS.
+# YAOS
+Yet Another Operating System
