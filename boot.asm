@@ -8,12 +8,6 @@ _start:
 times 33 db 0
 start:
     jmp 0x7C0:step2
-handle_one:
-    mov ah, 0eh
-    mov al, "A"
-    mov bx, 0x00
-    int 0x10
-    iret        ; return from interrupt
 step2:
     cli        ; clear interrupts
     mov ax, 0x7c0
@@ -25,10 +19,20 @@ step2:
     mov word[ss:0x04], handle_one
     mov word[ss:0x06], 0x7c0
     sti        ; enable interrupts (from keyboard, etc that BIOS initialised)
-    int 1
-    mov si, message    ; moves the address of message into SI which is a pointer register
-    call print        ; calls print()
-    jmp $             ; jumps to current address 
+    mov ah, 2    ; READ SECTOR COMMAND
+    mov al, 1    ; ONE SECTOR TO BE READ
+    mov ch, 0    ; cylinder = 0
+    mov cl, 2    ; read sector 2
+    mov dh, 0    ; head number
+    mov bx, buffer
+    int 0x13
+    jmp $
+
+error:
+    mov si, error_message
+    call print
+    jc error
+    jmp $
 
 print:                ; print is a global label, can be called from anywhere
     mov bx, 0         ; bx is used by int 0x10 for settings, 0 = default, 
@@ -47,6 +51,7 @@ print_char:
     int 0x10
     ret
 
-message: db 'HELLO WORLLLD', 0     
 times 510-($-$$) db 0      ; fills rest of the memory with 0 for 510 bytes
 dw 0xAA55         ; saves 0x55aa at the end because BIOS looks for boot signature (reverse because our machine is little endian)
+
+buffer:
