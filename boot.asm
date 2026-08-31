@@ -16,8 +16,6 @@ step2:
     mov ax, 0x00
     mov ss, ax
     mov sp, 0x7c00
-    mov word[ss:0x04], handle_one
-    mov word[ss:0x06], 0x7c0
     sti        ; enable interrupts (from keyboard, etc that BIOS initialised)
     mov ah, 2    ; READ SECTOR COMMAND
     mov al, 1    ; ONE SECTOR TO BE READ
@@ -26,12 +24,14 @@ step2:
     mov dh, 0    ; head number
     mov bx, buffer
     int 0x13
+    jc error
+    mov si, buffer
+    call print
     jmp $
 
 error:
     mov si, error_message
     call print
-    jc error
     jmp $
 
 print:                ; print is a global label, can be called from anywhere
@@ -50,6 +50,9 @@ print_char:
     mov ah, 0eh       ; the BIOS routine int 0x10 checks ah to see which video function is to be used, 0x0E means to print character
     int 0x10
     ret
+
+error_message:
+    db "Disk read error!", 0
 
 times 510-($-$$) db 0      ; fills rest of the memory with 0 for 510 bytes
 dw 0xAA55         ; saves 0x55aa at the end because BIOS looks for boot signature (reverse because our machine is little endian)
