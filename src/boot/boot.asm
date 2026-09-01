@@ -18,7 +18,6 @@ step2:
     mov ss, ax
     mov sp, 0x7c00
     sti        ; enable interrupts (from keyboard, etc that BIOS initialised)
-    jmp $
 
 .load_protected:
     cli
