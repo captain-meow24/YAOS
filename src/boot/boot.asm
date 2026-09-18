@@ -1,4 +1,4 @@
-ORG 0      ; Tell the assembler to assume this code starts at offset 0.-
+ORG 0      ; Tell the assembler to assume this code starts at offset 0
 BITS 16         ; tells assembler how many bits the instructions should be assembled into
 
 CODE_SEG equ gdt_code - gdt_start
@@ -76,24 +76,6 @@ gdt_descriptor:
     dw gdt_end - gdt_start - 1
     dd gdt_start
 
-[BITS 32]
-
-load32:
-    mov ax, DATA_SEG
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    mov ebp, 0x00200000
-    mov esp, ebp
-
-    ; enable A20 Line
-    in al, 0x92
-    or al, 2
-    out 0x92, al
-    
-    jmp $
 
 times 510-($-$$) db 0      ; fills rest of the memory with 0 for 510 bytes
 dw 0xAA55         ; saves 0x55aa at the end because BIOS looks for boot signature (reverse because our machine is little endian)
