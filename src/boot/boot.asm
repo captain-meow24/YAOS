@@ -25,7 +25,7 @@ step2:
     mov eax, cr0
     or eax, 0x1
     mov cr0, eax
-    jmp CODE_SEG:load32
+    ; jmp CODE_SEG:load32
 
 print:                ; print is a global label, can be called from anywhere
     mov bx, 0         ; bx is used by int 0x10 for settings, 0 = default, 
