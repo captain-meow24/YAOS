@@ -25,7 +25,7 @@ step2:
     mov eax, cr0
     or eax, 0x1
     mov cr0, eax
-    ; jmp CODE_SEG:load32
+    jmp CODE_SEG:load32
 
 print:                ; print is a global label, can be called from anywhere
     mov bx, 0         ; bx is used by int 0x10 for settings, 0 = default, 
@@ -75,6 +75,13 @@ gdt_end:
 gdt_descriptor:
     dw gdt_end - gdt_start - 1
     dd gdt_start
+
+[BITS 32]
+load32:
+    mov eax, 1
+    mov ecx, 100
+    mov edi, 0x100000
+    call ata_lba_read
 
 
 times 510-($-$$) db 0      ; fills rest of the memory with 0 for 510 bytes
