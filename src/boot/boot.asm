@@ -1,7 +1,10 @@
-ORG 0      ; Tell the assembler to assume this code starts at offset 0
+ORG 0      ; Tell the assembler to assume this code starts at offset 0, this will be used to calculate addresses for labels (size of the label as offset)
 BITS 16         ; tells assembler how many bits the instructions should be assembled into
 
-CODE_SEG equ gdt_code - gdt_start
+;  Global descriptor table stores the address of code and data segments, separate segments for each process help in memory protection from malicious processes by keeping each one's memory separate
+;  The hardware mandates atleast one segment, I am not implementing more because I will implement paging
+
+CODE_SEG equ gdt_code - gdt_start    ; assembler constants that store offset to code and data segments, code segments are executable, data segments are meant to be read or written to
 DATA_SEG equ gdt_data - gdt_start
 
 _start:
@@ -82,6 +85,45 @@ load32:
     mov ecx, 100
     mov edi, 0x100000
     call ata_lba_read
+
+ata_lba_read:
+    mov ebx, eax,   ; Backup the LBA
+    ; Send the higest 8 bits of the LBA to disk controller
+    shr eax, 24
+    or eax, 0xE0
+    mov dx, 0x1F6
+    out dx, al
+    ; Finished sending the highest 8 bits of the LBA
+
+    ; Send the total sectors to read
+    mov eax, ebx   ; Restore the backup LBA
+    mov dx, 0x1f3
+    out dx, al
+    shr eax, 16
+    out dx, al
+    ; Finished sending upper 16 bits of the LBA
+
+    mov dx, 0x1f7
+    mov al, 0x20
+    out dx, al
+
+    ; Read all sectors into memory
+.next_sector:
+    push ecx
+
+; Checking if we need to read
+.try_again:
+    mov dx, 0x1f7
+    in al, dx
+    test al, 8
+    jz .try_again
+
+; We need to read 256 words at a time
+    mov ecx, 256
+    mov dx, 0x1F0
+    rep insw
+    pop ecx
+    loop .next_sector
 
 
 times 510-($-$$) db 0      ; fills rest of the memory with 0 for 510 bytes
