@@ -67,12 +67,14 @@ void print(const char* str, char colour)
         terminal_writechar(str[i], colour);
     }
 }
+extern void problem();
 
 void kernel_main()
 {
     terminal_initialize();
 
-    print("HELLO WORLD", 14);
+    print("HELLO WORLD\n", 14);
 
     idt_init();    //initialise idt
+    problem();
 }

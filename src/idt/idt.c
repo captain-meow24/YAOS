@@ -8,7 +8,7 @@ struct idtr_desc idtr_descriptor;
 
 void idt_zero()
 {
-    print("Divide by zero error\n",14);
+    print("Divide by zero error\n",15);
 }
 
 void idt_set(int interrupt_no, void* address)
@@ -21,6 +21,8 @@ void idt_set(int interrupt_no, void* address)
     desc->offset_2 = (uint32_t) address >> 16;
 }
 
+extern void idt_load(struct idtr_desc* ptr);
+
 void idt_init()
 {
     memset(idt_descriptors, 0, sizeof(idt_descriptors));
@@ -28,4 +30,6 @@ void idt_init()
     idtr_descriptor.base = (uint32_t)idt_descriptors;
 
     idt_set(0, idt_zero);
+
+    idt_load(&idtr_descriptor);
 }
