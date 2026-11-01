@@ -77,6 +77,5 @@ void kernel_main()
     print("HELLO WORLD\n", 14);
 
     idt_init();    //initialise idt
-    //problem();
-    outb(0x60,0xff);
+
 }

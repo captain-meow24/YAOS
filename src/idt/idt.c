@@ -2,6 +2,7 @@
 #include "config.h"
 #include "memory/memory.h"
 #include "kernel.h"
+#include "io/io.h"
 
 struct idt_desc idt_descriptors[YAOS_TOTAL_INTERRUPTS];
 struct idtr_desc idtr_descriptor;
@@ -23,6 +24,14 @@ void idt_set(int interrupt_no, void* address)    // sets values for every interr
 
 extern void idt_load(struct idtr_desc* ptr);
 
+extern void int21h();
+
+void int21h_handler()
+{
+    print("Keyboard pressed!\n");
+    outb(0x20, 0x20);
+}
+
 void idt_init()
 {
     memset(idt_descriptors, 0, sizeof(idt_descriptors));    //initalising idt array
@@ -30,6 +39,7 @@ void idt_init()
     idtr_descriptor.base = (uint32_t)idt_descriptors;
 
     idt_set(0, idt_zero);
+    idt_set(0x21, idt21h);
 
     idt_load(&idtr_descriptor);
 }
