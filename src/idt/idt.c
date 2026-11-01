@@ -23,12 +23,17 @@ void idt_set(int interrupt_no, void* address)    // sets values for every interr
 }
 
 extern void idt_load(struct idtr_desc* ptr);
-
 extern void int21h();
+extern void no_interrupt();
 
 void int21h_handler()
 {
-    print("Keyboard pressed!\n");
+    print("Keyboard pressed!\n", 12);
+    outb(0x20, 0x20);
+}
+
+void no_interrupt_handler()
+{
     outb(0x20, 0x20);
 }
 
@@ -38,8 +43,13 @@ void idt_init()
     idtr_descriptor.limit = sizeof(idt_descriptors) - 1;
     idtr_descriptor.base = (uint32_t)idt_descriptors;
 
+    for (int i = 0; i < YAOS_TOTAL_INTERRUPTS; i++)    //set up all entries with no_interrupt
+    {
+        idt_set(i, no_interrupt);
+    }
+
     idt_set(0, idt_zero);
-    idt_set(0x21, idt21h);
+    idt_set(0x21, int21h);
 
     idt_load(&idtr_descriptor);
 }
