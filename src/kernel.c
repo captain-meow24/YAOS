@@ -77,6 +77,8 @@ void kernel_main()
 
     // Initialize the heap
     kheap_init();
+    // enable the system interrupts
+    enable_interrupts();
 
     print("HELLO WORLD\n", 14);
 

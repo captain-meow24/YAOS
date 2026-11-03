@@ -5,6 +5,16 @@ global int21h
 
 extern no_interrupt_handler
 global no_interrupt
+global enable_interrupts
+global disable_interrupts
+
+enable_interrupts:
+    sti
+    ret
+
+disable_interrupts:
+    cli
+    ret
 
 global idt_load     ; since c cannot call this special instruction lidt, this routine will
 idt_load:
