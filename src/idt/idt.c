@@ -15,11 +15,11 @@ void idt_zero()
 void idt_set(int interrupt_no, void* address)    // sets values for every interrupt descriptor
 {
     struct idt_desc* desc = &idt_descriptors[interrupt_no];    // IDT is an array, each interrupt is one entry/index
-    desc->offset_1 = (uint32_t) address & 0x0000ffff;    //lower 16 bits
-    desc->selector = KERNEL_CODE_SELECTOR;    //code offset to GDT
-    desc->zero = 0x00;        //Intel reserved this byte for future CPU architecture expansions and alignment
-    desc->type_attr = 0xEE;    //permissions, present flag, gate type
-    desc->offset_2 = (uint32_t) address >> 16;    //higher 16 bits
+    desc->offset_1 = (uint32_t) address & 0x0000ffff;    // lower 16 bits
+    desc->selector = KERNEL_CODE_SELECTOR;    // code offset to GDT
+    desc->zero = 0x00;        // Intel reserved this byte for future CPU architecture expansions and alignment
+    desc->type_attr = 0xEE;    // permissions, present flag, gate type
+    desc->offset_2 = (uint32_t) address >> 16;    // higher 16 bits
 }
 
 extern void idt_load(struct idtr_desc* ptr);
