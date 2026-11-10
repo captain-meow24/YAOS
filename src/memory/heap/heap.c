@@ -12,15 +12,17 @@ static int heap_validate_table(void* ptr, void* end, struct heap_table* table)
 {
     int res = 0;
 
+    // In C, pointer subtraction is allowed when both pointers point into the same array (it checks at runtime)
+    // Standard C does not define subtraction between void* pointers, GCC supports it as an extension. It treats void* as though it were a pointer to a 1-byte type
     size_t table_size = (size_t)(end - ptr);
+    // ptr = start of heap
+    // end = end of heap
     size_t total_blocks = table_size / YAOS_HEAP_BLOCK_SIZE;
     if (table->total != total_blocks)
     {
         res = -EINVARG;
-        goto out;
     }
 
-out:
     return res;
 }
 
@@ -36,23 +38,22 @@ int heap_create(struct heap* heap, void* ptr, void* end, struct heap_table* tabl
     if (!heap_validate_alignment(ptr) || !heap_validate_alignment(end))
     {
         res = -EINVARG;
-        goto out;
+        return res;
     }
-
-    memset(heap, 0, sizeof(struct heap));
-    heap->saddr = ptr;
-    heap->table = table;
 
     res = heap_validate_table(ptr, end, table);
     if (res < 0)
     {
-        goto out;
+        return res;
     }
+
+    memset(heap, 0, sizeof(struct heap));    // sets 0s at the location of the heap object
+    heap->saddr = ptr;
+    heap->table = table;
 
     size_t table_size = sizeof(HEAP_BLOCK_TABLE_ENTRY) * table->total;
     memset(table->entries, HEAP_BLOCK_TABLE_ENTRY_FREE, table_size);
 
-out:
     return res;
 }
 
@@ -76,8 +77,8 @@ static int heap_get_entry_type(HEAP_BLOCK_TABLE_ENTRY entry)
 int heap_get_start_block(struct heap* heap, uint32_t total_blocks)
 {
     struct heap_table* table = heap->table;
-    int bc = 0;
-    int bs = -1;
+    int bc = 0;      // block count
+    int bs = -1;    // block start
 
     for (size_t i = 0; i < table->total; i++)
     {
@@ -105,7 +106,7 @@ int heap_get_start_block(struct heap* heap, uint32_t total_blocks)
         return -ENOMEM;
     }
 
-    return bs;
+    return bs;    // return the index of the free block with enough memory
 }
 
 void* heap_block_to_address(struct heap* heap, int block)
@@ -125,8 +126,8 @@ void heap_mark_blocks_taken(struct heap* heap, int start_block, int total_blocks
 
     for (int i = start_block; i <= end_block; i++)
     {
-        heap->table->entries[i] = entry;
-        entry = HEAP_BLOCK_TABLE_ENTRY_TAKEN;
+        heap->table->entries[i] = entry;    // set first index as first, taken and has next (if there is next)
+        entry = HEAP_BLOCK_TABLE_ENTRY_TAKEN;    // reset entry
         if (i != end_block - 1)
         {
             entry |= HEAP_BLOCK_HAS_NEXT;

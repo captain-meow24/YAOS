@@ -77,11 +77,12 @@ void kernel_main()
 
     // Initialize the heap
     kheap_init();
-    // enable the system interrupts
-    enable_interrupts();
 
     print("HELLO WORLD\n", 14);
 
     idt_init();    //initialise idt
+
+    // enable the system interrupts
+    enable_interrupts();
 
 }

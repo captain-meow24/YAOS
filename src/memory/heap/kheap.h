@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+// These functions hide the heap object from the caller
+
 void kheap_init();
 void* kmalloc(size_t size);
 void kfree(void* ptr);
