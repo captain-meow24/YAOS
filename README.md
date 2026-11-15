@@ -8,11 +8,11 @@ YAOS is a 32-bit x86 operating system built from scratch using C and x86 Assembl
 
 Implemented an x86 bootloader that transitions the processor from 16-bit real mode to 32-bit protected mode using a Global Descriptor Table (GDT).
 
-Implemented LBA-based disk I/O to load kernel sectors from disk into physical memory.
+Implemented LBA based disk I/O to load kernel sectors from disk into physical memory.
 
 ## Video Output
 
-Implemented VGA text-mode output through direct memory-mapped access to video memory at 0xB8000.
+Implemented VGA text mode output through direct memory-mapped access to video memory at 0xB8000.
 
 ## Interrupt Handling
 
