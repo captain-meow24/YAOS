@@ -33,11 +33,11 @@ void* kmalloc(size_t size)
 // kzalloc initialises the memory with 0
 
 void* kzalloc (size_t size){
-    void* ptr = kmalloc(size_t size);
+    void* ptr = kmalloc(size);
     if(!ptr){
         return 0;
     }
-    memset(ptr, 0x00, size)
+    memset(ptr, 0x00, size);
     return ptr;
 }
 

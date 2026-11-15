@@ -35,6 +35,7 @@ void paging_switch(uint32_t* directory)
     current_directory = directory;
 }
 
+// instead of directly accessing the struct that manages the page irectory we use this function
 uint32_t* paging_4gb_chunk_get_directory(struct paging_4gb_chunk* chunk)
 {
     return chunk->directory_entry;
